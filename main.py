@@ -277,20 +277,20 @@ def train(args, model, train_loader, valid_loader):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='RCRL on TCGA_EGFR training script')
     parser.add_argument('--features_root', type=str,
-                        default=r'E:\qq\TCGA-EGFR\TCGA_EGFR_slide_feat_CONCH',help='patches feature save dir')
+                        default=r'...',help='patches feature save dir')
     parser.add_argument('--report_features_root', type=str,
-                        default=r'E:\qq\TCGA-EGFR\TCGA-EGFR-diagnosis-clean1-feature-CONCH',help='histopathological report feature save dir')
+                        default=r'...',help='histopathological report feature save dir')
     parser.add_argument('--report_tokens_features_root', type=str,
-                        default=r'E:\qq\TCGA-EGFR\TCGA-EGFR-diagnosis-clean1-tokens-feature-CONCH',help='word tokens of histopathological report save dir')
+                        default=r'...',help='word tokens of histopathological report save dir')
     parser.add_argument('--sequence_features_root', type=str,
-                        default=r'E:\qq\TCGA-EGFR\TCGA-EGFR-sequence-feature-CONCH',help='gene sequencing report feature save dir')
+                        default=r'...',help='gene sequencing report feature save dir')
     parser.add_argument('--patch_dim', type=int, default=512, help='patches feature dimension')
     parser.add_argument('--text_dim', type=int, default=512, help='text feature dimension')
     parser.add_argument('--text_tokens_dim', type=int, default=768, help='word toknes feature dimension')
     parser.add_argument('--save_path', type=str, default=r".\weights_RCRL" ,help='model weight save dir')
     parser.add_argument('--logger_path', type=str, default=r'.\logger_RCRL' ,help='model training record save dir')
-    parser.add_argument('--train_valid_csv', type=str, default=r"E:\qq\TCGA-EGFR\egfr_gdc_manifest_train_5fold.csv" ,help='five-fold train_valid dataset')
-    parser.add_argument('--test_csv', type=str, default=r"E:\qq\TCGA-EGFR\egfr_gdc_manifest_val.csv" ,help='test dataset')
+    parser.add_argument('--train_valid_csv', type=str, default=r".\data_split\egfr_gdc_manifest_train_5fold.csv" ,help='five-fold train_valid dataset')
+    parser.add_argument('--test_csv', type=str, default=r".\data_split\egfr_gdc_manifest_val.csv" ,help='test dataset')
     parser.add_argument('--nclass', type=int, default=2)
     parser.add_argument('--max_length', type=int, default=4, help='The length of contrastive learning queue')
     parser.add_argument('--batch_size', type=int, default=1)
