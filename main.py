@@ -16,7 +16,7 @@ from sklearn.metrics import auc as calc_auc
 from Dataset_TCGA_EGFR.Dataset_TCGA_EGFR import TCGA_EGFR_feat_label_Dataset, get_train_valid_names, get_test_names
 from Util_package import metric
 from Util_package.lookahead import Lookahead
-from Models.RCRL import RCRL
+from models.RCRL import RCRL
 from Util_package.radam import RAdam
 from Util_package.utils import Logger
 
