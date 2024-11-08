@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from RCRL.models.GatedAttention import GatedAttention
-from RCRL.models.TransLayer import TransLayer
+from models.GatedAttention import GatedAttention
+from models.TransLayer import TransLayer
 
 
 class MultiHeadAttention(nn.Module):
