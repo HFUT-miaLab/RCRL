@@ -112,15 +112,15 @@ class RCRL(nn.Module):
         self.logit_scale1 = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
         self.logit_scale2 = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
-    def Contrastive_Learning(self, histo, histo_reconstruct_feat, label):
+    def Contrastive_Learning(self, logit_scale, original_histo_embedd_list, reconstruct_histo_embedd_list, histo, histo_reconstruct_feat, label):
         if label != self.n_classes - 1:  # 不是最后一个标签,防止越界
-            original_histo_contrast_list = torch.cat((self.original_histo_embedd_list[0:label].detach()
-                                                      , self.original_histo_embedd_list[label + 1:].detach()))
-            reconstruct_histo_contrast_list = torch.cat((self.reconstruct_histo_embedd_list[0:label].detach()
-                                                         , self.reconstruct_histo_embedd_list[label + 1:].detach()))
+            original_histo_contrast_list = torch.cat((original_histo_embedd_list[0:label].detach()
+                                                      , original_histo_embedd_list[label + 1:].detach()))
+            reconstruct_histo_contrast_list = torch.cat((reconstruct_histo_embedd_list[0:label].detach()
+                                                         , reconstruct_histo_embedd_list[label + 1:].detach()))
         else:
-            original_histo_contrast_list = self.original_histo_embedd_list[0:label].detach()
-            reconstruct_histo_contrast_list = self.reconstruct_histo_embedd_list[0:label].detach()
+            original_histo_contrast_list = original_histo_embedd_list[0:label].detach()
+            reconstruct_histo_contrast_list = reconstruct_histo_embedd_list[0:label].detach()
 
 
         original_histo_contrast_list = original_histo_contrast_list.view(-1, 512)
@@ -134,7 +134,7 @@ class RCRL(nn.Module):
         reconstruct_histo_contrast_list = reconstruct_histo_contrast_list / reconstruct_histo_contrast_list.norm(dim=-1,
                                                                                                                  keepdim=True)
 
-        logits_per_original = self.logit_scale1.exp() * original_histo_contrast_list @ reconstruct_histo_contrast_list.t()
+        logits_per_original = logit_scale.exp() * original_histo_contrast_list @ reconstruct_histo_contrast_list.t()
         logits_original = logits_per_original[-1]
         original_probs = torch.softmax(logits_original, dim=-1)
 
@@ -169,7 +169,8 @@ class RCRL(nn.Module):
         fusion_feat = self.fc_fusion(fusion_feat)
 
         # Report reconstruct align
-        original_probs, reconstruct_probs, length_reconstruct = self.Contrastive_Learning(histo, histo_reconstruct_feat, label)
+        original_probs, reconstruct_probs, length_reconstruct = self.Contrastive_Learning( self.logit_scale1, self.original_histo_embedd_list,
+                                                                                            self.reconstruct_histo_embedd_list, histo, histo_reconstruct_feat, label)
 
         # update the queue
         self.original_histo_embedd_list[int(label)] = torch.cat([self.original_histo_embedd_list[int(label)][1:], histo], dim=0)
@@ -181,7 +182,8 @@ class RCRL(nn.Module):
         Y_prob = F.softmax(logits, dim=1)
 
         # molecular semantics align
-        fusion_probs, sequence_probs, length_sequence = self.Contrastive_Learning(fusion_feat, sequence, label)
+        fusion_probs, sequence_probs, length_sequence = self.Contrastive_Learning( self.logit_scale2, self.fusion_embedd_list,
+                                                                                    self.sequence_embedd_list ,fusion_feat, sequence, label)
 
         # update the queue
         self.fusion_embedd_list[int(label)] = torch.cat([self.fusion_embedd_list[int(label)][1:], fusion_feat], dim=0)
